@@ -10,7 +10,11 @@ class MessagesController < ApplicationController
 
   # GET /messages/1
   def show
-    render json: @message
+    if @message
+      render json: @message
+    else
+      render json: ("error:" "not found. wrong id"), status: :not_found
+    end
   end
 
   # POST /messages
@@ -41,7 +45,7 @@ class MessagesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_message
-      @message = Message.find(params[:id])
+      @message = Message.find_by_id(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
