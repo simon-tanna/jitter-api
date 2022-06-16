@@ -1,6 +1,7 @@
 class MessagesController < ApplicationController
   before_action :authenticate_user, except: [:index, :show]
   before_action :set_message, only: [:show, :update, :destroy]
+  before_action :check_ownership, only: [:update, :destroy]
 
   # GET /messages
   def index
@@ -53,5 +54,12 @@ class MessagesController < ApplicationController
     # Only allow a list of trusted parameters through.
     def message_params
       params.require(:message).permit(:text)
+    end
+
+    # Check if the user owns the specified message
+    def check_ownership
+      if current_user.id != @message.user.id
+        render json: {error: "This is not your message. Stop trying to update or delete that which you do not own"}, status: 401
+      end
     end
 end
