@@ -6,15 +6,18 @@ class MessagesController < ApplicationController
   # GET /messages
   def index
     # displays most recent message or updated message
-    @messages = Message.order("updated_at DESC")
-
-    render json: @messages
+    # @messages = Message.order("updated_at DESC")
+    @messages = [] # initialize empty array
+    Message.order("updated_at DESC").each do |message| # pass each message with transform_message method into empty array
+      @messages << message.transform_message
+    end
+    render json: @messages # render the message list
   end
 
   # GET /messages/1
   def show
     if @message
-      render json: @message
+      render json: @message.transform_message
     else
       render json: ("error:" "not found. wrong id"), status: :not_found
     end
