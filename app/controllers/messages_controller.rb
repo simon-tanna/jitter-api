@@ -3,7 +3,8 @@ class MessagesController < ApplicationController
 
   # GET /messages
   def index
-    @messages = Message.all
+    # displays most recent message or updated message
+    @messages = Message.order("updated_at DESC")
 
     render json: @messages
   end
