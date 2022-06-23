@@ -8,10 +8,21 @@ class MessagesController < ApplicationController
     # displays most recent message or updated message
     # @messages = Message.order("updated_at DESC")
     @messages = [] # initialize empty array
-    Message.order("updated_at DESC").each do |message| # pass each message with transform_message method into empty array
-      @messages << message.transform_message
+    # ask if params are being recieved in the query string
+    if (params[:username])
+      Message.find_by_user(params[:username]).each do |message|
+        @messages << message.transform_message
+      end
+    else
+      Message.order("updated_at DESC").each do |message| # pass each message with transform_message method into empty array
+        @messages << message.transform_message
+      end
     end
-    render json: @messages # render the message list
+    if @messages.count === 0
+      render json: {error: "messages not found"}
+    else
+      render json: @messages # render the message list
+    end
   end
 
   # GET /messages/1
