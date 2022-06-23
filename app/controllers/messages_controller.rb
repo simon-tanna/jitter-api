@@ -1,29 +1,40 @@
 class MessagesController < ApplicationController
-  before_action :authenticate_user, except: [:index, :show, :user_messages]
+  before_action :authenticate_user, except: [:index, :show, :user_messages] 
   before_action :set_message, only: [:show, :update, :destroy]
   before_action :check_ownership, only: [:update, :destroy]
 
-  # GET /messages
+  # # GET /messages
   def index
-    # displays most recent message or updated message
     # @messages = Message.order("updated_at DESC")
-    @messages = [] # initialize empty array
-    # ask if params are being recieved in the query string
+    @messages = []
+
     if (params[:username])
-      Message.find_by_user(params[:username]).each do |message|
+      Message.find_by_user(params[:username]).order("updated_at DESC").each do |message|
         @messages << message.transform_message
       end
     else
-      Message.order("updated_at DESC").each do |message| # pass each message with transform_message method into empty array
+      Message.order("updated_at DESC").each do |message|
         @messages << message.transform_message
       end
     end
-    if @messages.count === 0
-      render json: {error: "messages not found"}
-    else
-      render json: @messages # render the message list
-    end
+
+    
+   if @messages.count == 0
+    render json: {error: "Messages not found"}
+   else
+    render json: @messages
+   end
   end
+
+  # def index
+  #   # displays most recent message or updated message
+  #   # @messages = Message.order("updated_at DESC")
+  #   @messages = [] # initialize empty array
+  #   Message.order("updated_at DESC").each do |message| # pass each message with transform_message method into empty array
+  #     @messages << message.transform_message
+  #   end
+  #   render json: @messages # render the message list
+  # end
 
   # GET /messages/1
   def show
@@ -90,11 +101,12 @@ class MessagesController < ApplicationController
 
     # Check if the user owns the specified message
     def check_ownership
-      # If user is an admin it will skip the ownership check
-      if !current_user.is_admin
-        if current_user.id != @message.user.id
-          render json: {error: "This is not your message. Stop trying to update or delete that which you do not own"}, status: 401
-        end
+      #if the user is an admin will skip the ownership if
+      if !(current_user.is_admin || current_user.id == @message.user.id)
+      # if !current_user.is_admin
+      #   if current_user.id != @message.user.id
+          render json: {error: "Unauthorised to do this action"}
+        # end
       end
     end
 end
