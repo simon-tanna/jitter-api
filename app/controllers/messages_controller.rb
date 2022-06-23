@@ -90,8 +90,11 @@ class MessagesController < ApplicationController
 
     # Check if the user owns the specified message
     def check_ownership
-      if current_user.id != @message.user.id
-        render json: {error: "This is not your message. Stop trying to update or delete that which you do not own"}, status: 401
+      # If user is an admin it will skip the ownership check
+      if !current_user.is_admin
+        if current_user.id != @message.user.id
+          render json: {error: "This is not your message. Stop trying to update or delete that which you do not own"}, status: 401
+        end
       end
     end
 end
