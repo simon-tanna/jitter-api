@@ -34,7 +34,11 @@ class MessagesController < ApplicationController
 
   # Get messages from a specific user
   def user_messages
-    @
+    @messages = []
+    Message.find_by_user(params[:username]).each do |message|
+      @messages << message.transform_message
+    end
+    render json: @messages
   end
 
   # POST /messages
