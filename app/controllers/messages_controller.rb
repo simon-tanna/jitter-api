@@ -1,5 +1,5 @@
 class MessagesController < ApplicationController
-  before_action :authenticate_user, except: [:index, :show]
+  before_action :authenticate_user, except: [:index, :show, :user_messages]
   before_action :set_message, only: [:show, :update, :destroy]
   before_action :check_ownership, only: [:update, :destroy]
 
@@ -23,12 +23,30 @@ class MessagesController < ApplicationController
     end
   end
 
+  # GET my messages for logged in user
+  def my_messages
+    @messages = []
+    current_user.messages.order("updated_at DESC").each do |message| # pass each message with transform_message method into empty array
+      @messages << message.transform_message
+    end
+    render json: @messages
+  end
+
+  # Get messages from a specific user
+  def user_messages
+    @messages = []
+    Message.find_by_user(params[:username]).each do |message|
+      @messages << message.transform_message
+    end
+    render json: @messages
+  end
+
   # POST /messages
   def create
     # @message = Message.new(message_params)
     @message = current_user.messages.create(message_params) #current_user is assigned to the message params
     if @message.save
-      render json: @message, status: :created, location: @message
+      render json: @message.transform_message, status: :created, location: @message
     else
       render json: @message.errors, status: :unprocessable_entity
     end
@@ -37,7 +55,7 @@ class MessagesController < ApplicationController
   # PATCH/PUT /messages/1
   def update
     if @message.update(message_params)
-      render json: @message
+      render json: @message.transform_message
     else
       render json: @message.errors, status: :unprocessable_entity
     end
