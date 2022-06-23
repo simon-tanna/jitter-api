@@ -7,10 +7,10 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 if User.count == 0
-    User.create(username: "simon1", email: "simon1@test.com", password: "password", password_confirmation: "password")
-    User.create(username: "simon2", email: "simon2@test.com", password: "password", password_confirmation: "password")
-    User.create(username: "simon3", email: "simon3@test.com", password: "password", password_confirmation: "password")
-    User.create(username: "simon4", email: "simon4@test.com", password: "password", password_confirmation: "password")
+    User.create(username: "simon1", email: "simon1@test.com", password: "password", password_confirmation: "password", is_admin: true)
+    User.create(username: "simon2", email: "simon2@test.com", password: "password", password_confirmation: "password", is_admin: false)
+    User.create(username: "simon3", email: "simon3@test.com", password: "password", password_confirmation: "password", is_admin: false)
+    User.create(username: "simon4", email: "simon4@test.com", password: "password", password_confirmation: "password", is_admin: false)
 end
 
 if Message.count == 0
