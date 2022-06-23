@@ -1,5 +1,5 @@
 class MessagesController < ApplicationController
-  before_action :authenticate_user, except: [:index, :show]
+  before_action :authenticate_user, except: [:index, :show, :user_messages]
   before_action :set_message, only: [:show, :update, :destroy]
   before_action :check_ownership, only: [:update, :destroy]
 
@@ -21,6 +21,20 @@ class MessagesController < ApplicationController
     else
       render json: ("error:" "not found. wrong id"), status: :not_found
     end
+  end
+
+  # GET my messages for logged in user
+  def my_messages
+    @messages = []
+    current_user.messages.order("updated_at DESC").each do |message| # pass each message with transform_message method into empty array
+      @messages << message.transform_message
+    end
+    render json: @messages
+  end
+
+  # Get messages from a specific user
+  def user_messages
+    @
   end
 
   # POST /messages
