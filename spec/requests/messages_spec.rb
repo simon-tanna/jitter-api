@@ -49,7 +49,13 @@ RSpec.describe "/messages", type: :request do
         # expect(JSON.parse(response.body).size).to eq(2)
       end
 
-      
+    describe "post a message at /messages" do
+      it "does not create a new message as it is not authorized" do
+        post "/messages", params: { message: {text: "This is a test message" } }
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
 
 
   end
