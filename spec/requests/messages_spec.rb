@@ -18,9 +18,10 @@ RSpec.describe "/messages", type: :request do
   # adjust the attributes here as well.
 
   # This before action will create messages each time the test is run.
-  before(:each) do
-    FactoryBot.create(:message, text: "Message test 1")
-    FactoryBot.create(:message, text: "Message test 2")
+  before(:all) do
+    @test_user2 = FactoryBot.create(:user, username: "TestUser2", email: "test2@example.com", password: "123456", password_confirmation: "123456")
+    FactoryBot.create(:message, text: "Message test 1", user: @test_user2)
+    FactoryBot.create(:message, text: "Message test 2", user: @test_user2)
   end
 
   describe "get all messages at /messages" do
@@ -33,7 +34,7 @@ RSpec.describe "/messages", type: :request do
 
     describe "get  message at /messages/:id" do
       it "should get a message based on param" do
-        get "/messages/3"
+        get "/messages/1"
         # print JSON.parse(response.body)
         expect(response).to have_http_status(:success)
         # access just to the body of the message
