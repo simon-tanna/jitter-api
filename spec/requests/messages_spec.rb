@@ -12,6 +12,12 @@ require 'rails_helper'
 # of tools you can use to make these specs even more expressive, but we're
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
+
+def authenticated_header(user)
+  token = Knock::AuthToken.new(payload: {sub: user.id}).token
+  { 'Authorization': "Bearer #{token}"}
+end
+
 RSpec.describe "/messages", type: :request do
   # This should return the minimal set of attributes required to create a valid
   # Message. As you add validations to Message, be sure to
@@ -53,6 +59,11 @@ RSpec.describe "/messages", type: :request do
       it "does not create a new message as it is not authorized" do
         post "/messages", params: { message: {text: "This is a test message" } }
         expect(response).to have_http_status(:unauthorized)
+      end
+
+      it "creates a new message as the user is authorized" do
+        post "/messages", headers: authenticated_header(@test_user2), params: { message: {text: "This is a test message" } }
+        expect(response).to have_http_status(201)
       end
     end
 
